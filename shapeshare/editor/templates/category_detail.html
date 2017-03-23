@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block title %}{{ category }}{% endblock %}
+{% block categorys_active %}active{% endblock %}
+
+{% block body %}
+<div class="container-fluid shapefiles-container">
+
+    <div class="row">
+
+        <!-- Left category Info -->
+        <div class="col-sm-4 col-md-3">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <a href="{% url 'editor:category_detail' category.id %}">
+                        {% if category.thumbnail %}
+                            <img src="{{ category.thumbnail.url }}" class="img-responsive">
+                        {% else %}
+                            <h4>Shapefile Thumbnail here</h4>
+                        {% endif %}
+                    </a>
+                    <h1>{{ category.category_name }} <small></h1>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right shapefile Info -->
+        <div class="col-sm-8 col-md-9">
+
+            <ul class="nav nav-pills" style="margin-bottom: 10px;">
+                <li role="presentation" class="active"><a href="{% url 'editor:category_detail' category.id %}">View All</a></li>
+                <li role="presentation"><a href="{% url 'editor:import_shapefile'%}">Add New shapefile</a></li>
+            </ul>
+
+            <div class="panel panel-default">
+                <div class="panel-body">
+
+                    <h3>All shapefiles</h3>
+
+                    {% if error_message %}
+                        <p><strong>{{ error_message }}</strong></p>
+                    {% endif %}
+
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Shapefile Name</th>
+                            <th>Geometry Type</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for shapefile in category.shapefile_set.all %}
+                            <tr>
+                                <td>{{ shapefile.filename }}</td>
+                                <td>{{ shapefile.geom_type}}</td>
+
+                                <td>
+                                    <a  href="/editor/export/{{ shapefile.id }}">
+                                        <button type="button" class="btn btn-success btn-xs">
+                                            <span class="glyphicon glyphicon-play"></span>&nbsp; Download
+                                        </button>
+                                    </a>
+                                </td>
+                                <td>
+                                    <form action="#" method="post" style="display: inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="shapefile_id" value="{{ shapefile.id }}" />
+                                        <button type="submit" class="btn btn-danger btn-xs">
+                                            <span class="glyphicon glyphicon-remove"></span>&nbsp; Delete
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
